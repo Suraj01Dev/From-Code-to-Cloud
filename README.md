@@ -30,21 +30,85 @@ The project revolves around deployment of a python API in the AWS infrastructure
   3. Application Deployment
 
 ### Networking
-To achieve high availability and fault tolerance, we will be creating a Virtual Private Cloud (VPC) with two public subnets belonging to two availability zones **eu-west-1a** and **eu-west-1b**.
-
+To achieve high availability and fault tolerance, the Networking section will focus on creating a Virtual Private Cloud (VPC) with two public subnets spanning two availability zones: eu-west-1a and eu-west-1b.
 #### Visual Representation
 ![image](https://github.com/Suraj01Dev/From-Code-to-Cloud/assets/120789150/1728235f-ba25-41f1-9382-8d071e6ee19e)
 
-This diagram from AWS management console gives the visual representation of the netwoking part.
+This diagram provides a visual representation of the planned networking infrastructure within the AWS Management Console. It showcases the VPC setup with two public subnets distributed across different availability zones for redundancy and high availability.
+
+Let's go ahead and start building the [networking module](https://github.com/Suraj01Dev/From-Code-to-Cloud/blob/main/API%20Deployment%20with%20Terraform/networking/main.tf) using terraform.
+
+To create a VPC in we need the following resources.
+- VPC 
+- Subnet
+- Internet Gateway
+- Route Table
+- Route Table Association
+
+#### VPC
+
+```HCL
+resource "aws_vpc" "api-project-vpc"{
+    cidr_block=var.vpc_cidr
+    tags={
+        Name = var.vpc_name
+    }
+}
+```
+The only argument the aws_vpc takes is the vpc cidr block which is "10.0.0.0/16" and this value is stored in **terraform.tfvars**.
+
+#### Subnet
+
+```HCL
+resource "aws_subnet" "api-project-subnet" {
+  count=length(var.cidr_public_subnet)
+  vpc_id     = aws_vpc.api-project-vpc.id
+  cidr_block = element(var.cidr_public_subnet, count.index )
+  availability_zone = element(var.eu_availability_zone, count.index)
+
+}
+```
+The subnet resource takes three arguments vpc_id, cidr_block and availability_zone. The cidr_block takes these values ["10.0.1.0/24", "10.0.2.0/24"]. And the availability zones are **eu-west-1a** and **eu-west-1b**.
+
+### Internet Gateway
+The internet gateway is responsible for the subnets having a way to reach the internet.
+```HCL
+resource "aws_internet_gateway" "api-project-ig" {
+  vpc_id = aws_vpc.api-project-vpc.id
+
+}
+```
+
+The internet gateway only takes the vpc_id.
 
 
+### Route Table
 
+```HCL
+resource "aws_route_table" "api-project-rt" {
+  vpc_id = aws_vpc.api-project-vpc.id
 
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.api-project-ig.id
+  }
+}
 
+```
+The route table creates a route in the VPC with the internet gateway with gateway as "0.0.0.0/0".
 
+### Route Table Association
 
+```HCL
+resource "aws_route_table_association" "api-project-rt-a" {
+  
+  count=length(aws_subnet.api-project-subnet)
+  subnet_id      = aws_subnet.api-project-subnet[count.index].id
+  route_table_id = aws_route_table.api-project-rt.id
+}
+```
 
-
+The route table association links the route table and the subnets.
 
 
 
