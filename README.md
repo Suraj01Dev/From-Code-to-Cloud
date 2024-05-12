@@ -1,4 +1,3 @@
-# From-Code-to-Cloud : 
 # Python API Deployment with Terraform on AWS
 _Devops Portfolio Project 1_
 
@@ -22,24 +21,21 @@ To accomplish this task, the project leverages the following tools and technolog
 These tools and technologies work together to automate the deployment process, ensuring scalability, reliability, and maintainability of the deployed API infrastructure on AWS.
 
 
-## Planning the workflow
+## Planning and Building
 
 
-![image](https://github.com/Suraj01Dev/From-Code-to-Cloud/assets/120789150/667516c9-4ce3-40d2-9793-94fb5aad81b1)
+The project revolves around deployment of a python API in the AWS infrastructure. To accomplish this we will be splitting the project into three sections
+  1. Networking
+  2. Security
+  3. Application Deployment
 
+### Networking
+To achieve high availability and fault tolerance, we will be creating a Virtual Private Cloud (VPC) with two public subnets belonging to two availability zones **eu-west-1a** and **eu-west-1b**.
 
-The main motivation of the project is to deploy a Python API into an AWS EC2 instance with high availability. For redundancy, a Virtual Private Cloud (VPC) will be created with two public subnets in two availability zones: eu-west-1a and eu-west-1b.
+#### Visual Representation
+![image](https://github.com/Suraj01Dev/From-Code-to-Cloud/assets/120789150/1728235f-ba25-41f1-9382-8d071e6ee19e)
 
-**Visual Representation**
-![image](https://github.com/Suraj01Dev/From-Code-to-Cloud/assets/120789150/b6a3b843-5e21-4b8f-ba7e-8cce07bbd1f9)
-
-This diagram illustrates the planned VPC setup with two public subnets spread across different availability zones to ensure high availability and fault tolerance.
-
-
-
-
-
-
+This diagram from AWS management console gives the visual representation of the netwoking part.
 
 
 
